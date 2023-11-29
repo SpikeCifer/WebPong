@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include "pad.h"
 
 typedef struct {
     Vector2 Position;
@@ -9,4 +10,4 @@ typedef struct {
 
 void updateBall(Ball* ball);
 void drawBall(Ball* ball);
-/* bool ballBounces(Ball* ball); */
+bool doesBallBounceOnPad(Ball* ball, Pad* pad); 

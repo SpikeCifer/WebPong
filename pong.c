@@ -1,6 +1,5 @@
 #include <raylib.h>
 #include "ball.h"
-#include "pad.h"
 
 typedef struct {
     Pad player1;
@@ -10,6 +9,8 @@ typedef struct {
 
 void update(GameData* game) {
     updateBall(&game->ball);
+    updatePad(&game->player1);
+    updatePad(&game->player2);
 }
 
 void draw(GameData* game) {
@@ -24,52 +25,45 @@ void draw(GameData* game) {
     };
     DrawLineEx(lineStart, lineEnd, 4, LIGHTGRAY);
 
-    // Draw Scores
     int halfScreen = GetScreenWidth()/2;
-    DrawText(TextFormat("%d", game->player1.Score), halfScreen - halfScreen/2,
-                10, 30, LIGHTGRAY);
+    // Draw Scores
+    DrawText(TextFormat("%d", game->player1.Score), 
+             halfScreen - halfScreen/2,
+             10, 30, LIGHTGRAY);
 
-    DrawText(TextFormat("%d", game->player2.Score), halfScreen + halfScreen/2,
-                10, 30, LIGHTGRAY);
+    DrawText(TextFormat("%d", game->player2.Score), 
+             halfScreen + halfScreen/2,
+             10, 30, LIGHTGRAY);
 
-    // Draw Ball
     drawBall(&game->ball);
+
     drawPad(&game->player1);
     drawPad(&game->player2);
     EndDrawing();
 }
 
-void initWindow() {
-    // Create the window
-    const int width = 800;
-    const int height = 450;
-    const char* title = "Pong over the Web";
-    InitWindow(width, height, title);
-    SetTargetFPS(60);
-}
-
 GameData initGame() {
     Pad player1 = {
-        .Scheme = {},
+        .Scheme = {.UpButton = KEY_UP, .DownButton = KEY_DOWN},
         .Score = 0,
-        .Speed = 4.0,
+        .Speed = 70.0,
 
         .Position = {5, GetScreenHeight()/2.0},
-        .Size = {5, 40},
+        .Size = {5, 50},
     };
 
     Pad player2 = {
-        .Scheme = {},
+        .Scheme = {.UpButton = KEY_K, .DownButton = KEY_J},
         .Score = 0,
-        .Speed = 5.0,
+        .Speed = 70.0,
 
-        .Position = {GetScreenWidth() - 5, GetScreenHeight()/2.0},
-        .Size = {5, 40},
+        .Position = {GetScreenWidth() - 10, GetScreenHeight()/2.0},
+        .Size = {5, 50},
     };
 
     Ball ball = {
         .Position = {GetScreenWidth()/2.f, GetScreenHeight()/2.f},
-        .Velocity = {15.0, 0},
+        .Velocity = {50.0, 70.0},
         .Width = 20,
         .Height = 20,
     };
@@ -84,7 +78,13 @@ GameData initGame() {
 }
 
 int main() {
-    initWindow();
+    // Create the window
+    const int width = 800;
+    const int height = 450;
+    const char* title = "Pong over the Web";
+    InitWindow(width, height, title);
+    SetTargetFPS(60);
+
     GameData game = initGame();
 
     while(!WindowShouldClose()) {
