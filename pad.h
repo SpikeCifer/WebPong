@@ -6,6 +6,7 @@ typedef struct {
 } InputScheme ;
 
 typedef struct {
+    int ID;
     InputScheme Scheme;
     int Score;
     float Speed;

@@ -1,12 +1,13 @@
 #include "ball.h"
 #include <raylib.h>
 
-void updateBall(Ball* ball) {
+void updateBall(Ball* ball, Pad* player1, Pad* player2) {
     ball->Velocity.x += 0.001 * ball->Velocity.x;
     ball->Velocity.y += 0.001 * ball->Velocity.y;
     ball->Position.x += GetFrameTime() * ball->Velocity.x;
     ball->Position.y += GetFrameTime() * ball->Velocity.y;
 
+    // Check if ball bounces on top or bottom
     if (ball->Position.y - (int)ball->Height/2 < 0 || // Better effect on top bounce
         ball->Position.y + ball->Height > GetScreenHeight()) {
         ball->Velocity.y = -ball->Velocity.y;
@@ -16,6 +17,8 @@ void updateBall(Ball* ball) {
         ball->Position.x + ball->Width > GetScreenWidth()) {
         ball->Velocity.x = -ball->Velocity.x;
     }
+
+    // Check if ball bounces on Pads
 }
 
 void drawBall(Ball* ball) {
@@ -24,8 +27,4 @@ void drawBall(Ball* ball) {
                   ball->Width, 
                   ball->Height, 
                   WHITE);
-}
-
-bool doesBallBounceOnPad(Ball* ball, Pad* pad) {
-    return false;
 }

@@ -8,6 +8,5 @@ typedef struct {
     int Width;
 } Ball;
 
-void updateBall(Ball* ball);
+void updateBall(Ball* ball, Pad* player1, Pad* player2);
 void drawBall(Ball* ball);
-bool doesBallBounceOnPad(Ball* ball, Pad* pad); 
