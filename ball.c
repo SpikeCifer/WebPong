@@ -1,6 +1,16 @@
 #include "ball.h"
 #include <raylib.h>
 
+Ball createBall() {
+    Ball ball = {
+        .Position = {GetScreenWidth()/2.f, GetScreenHeight()/2.f},
+        .Velocity = {-70.0, 70.0},
+        .Width = 20,
+        .Height = 20,
+    };
+    return ball;
+}
+
 void updateBall(Ball* ball, Pad* player1, Pad* player2) {
     ball->Velocity.x += 0.001 * ball->Velocity.x;
     ball->Velocity.y += 0.001 * ball->Velocity.y;
@@ -17,8 +27,6 @@ void updateBall(Ball* ball, Pad* player1, Pad* player2) {
         ball->Position.x + ball->Width > GetScreenWidth()) {
         ball->Velocity.x = -ball->Velocity.x;
     }
-
-    // Check if ball bounces on Pads
 }
 
 void drawBall(Ball* ball) {

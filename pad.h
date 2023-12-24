@@ -15,5 +15,6 @@ typedef struct {
     Vector2 Size;
 } Pad;
 
+Pad createPad(int upKey, int DownKey, Vector2 Position);
 void updatePad(Pad* pad);
 void drawPad(Pad* pad);

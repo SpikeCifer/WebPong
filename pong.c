@@ -8,8 +8,9 @@ typedef struct {
     Ball ball;
 } GameData;
 
+// The bounce logic could be cleaner
 bool goal_scored(Ball* ball, Pad* pad) {
-    bool bounce = ball->Position.y > pad->Position.y - pad->Size.y &&
+    bool bounce = pad->Position.y - pad->Size.y < ball->Position.y && 
         ball->Position.y < pad->Position.y + pad->Size.y; 
 
     if (pad->ID == 1) {
@@ -20,6 +21,26 @@ bool goal_scored(Ball* ball, Pad* pad) {
     return false;
 }
 
+void updateScore(GameData* game) {
+    if (goal_scored(&game->ball, &game->left_player)) {
+        game->right_player.Score++;
+
+        game->ball.Position.x = GetScreenWidth()/2.f;
+        game->ball.Position.y = GetScreenWidth()/2.f;
+        game->ball.Velocity.x = 70.0; 
+        game->ball.Velocity.y = 70.0; 
+    } 
+    
+    if (goal_scored(&game->ball, &game->right_player)) {
+        game->left_player.Score++;
+
+        game->ball.Position.x = GetScreenWidth()/2.f;
+        game->ball.Position.y = GetScreenWidth()/2.f;
+        game->ball.Velocity.x = -70.0; 
+        game->ball.Velocity.y = 70.0; 
+    }
+}
+
 void update(GameData* game) {
     Ball* ball = &game->ball;
     Pad* left_player = &game->left_player; 
@@ -28,25 +49,7 @@ void update(GameData* game) {
     updateBall(ball, left_player, right_player);
     updatePad(left_player);
     updatePad(right_player);
-
-    // Update Score
-    if (goal_scored(ball, left_player)) 
-    {
-        game->right_player.Score++;
-        ball->Position.x = GetScreenWidth()/2.f;
-        ball->Position.y = GetScreenWidth()/2.f;
-        ball->Velocity.x = 70.0; 
-        ball->Velocity.y = 70.0; 
-    } 
-
-    if (goal_scored(ball, right_player)) 
-    {
-        game->left_player.Score++;
-        ball->Position.x = GetScreenWidth()/2.f;
-        ball->Position.y = GetScreenWidth()/2.f;
-        ball->Velocity.x = -50.0; 
-        ball->Velocity.y = 70.0; 
-    }
+    updateScore(game);
 }
 
 void draw(GameData* game) {
@@ -62,57 +65,18 @@ void draw(GameData* game) {
     DrawLineEx(lineStart, lineEnd, 4, LIGHTGRAY);
 
     int halfScreen = GetScreenWidth()/2;
+    
     // Draw Scores
     DrawText(TextFormat("%d", game->left_player.Score), 
-             halfScreen - halfScreen/2,
-             10, 30, LIGHTGRAY);
+             halfScreen - halfScreen/2, 10, 30, LIGHTGRAY);
 
     DrawText(TextFormat("%d", game->right_player.Score), 
-             halfScreen + halfScreen/2,
-             10, 30, LIGHTGRAY);
+             halfScreen + halfScreen/2, 10, 30, LIGHTGRAY);
 
     drawBall(&game->ball);
-
     drawPad(&game->left_player);
     drawPad(&game->right_player);
     EndDrawing();
-}
-
-GameData initGame() {
-    Pad left_player = {
-        .ID = 1,
-        .Scheme = {.UpButton = KEY_UP, .DownButton = KEY_DOWN},
-        .Score = 0,
-        .Speed = 70.0,
-
-        .Position = {5, GetScreenHeight()/2.0},
-        .Size = {5, 50},
-    };
-
-    Pad right_player = {
-        .ID = 2,
-        .Scheme = {.UpButton = KEY_K, .DownButton = KEY_J},
-        .Score = 0,
-        .Speed = 70.0,
-
-        .Position = {GetScreenWidth() - 10, GetScreenHeight()/2.0},
-        .Size = {5, 50},
-    };
-
-    Ball ball = {
-        .Position = {GetScreenWidth()/2.f, GetScreenHeight()/2.f},
-        .Velocity = {-70.0, 70.0},
-        .Width = 20,
-        .Height = 20,
-    };
-
-    GameData game = {
-        .ball = ball,
-        .left_player = left_player,
-        .right_player = right_player,
-    };
-
-    return game;
 }
 
 int main() {
@@ -123,8 +87,17 @@ int main() {
     InitWindow(width, height, title);
     SetTargetFPS(60);
 
-    GameData game = initGame();
+    // Initialize the Game
+    Vector2 left_player_position = {5, GetScreenHeight()/2.0};
+    Vector2 right_player_position= {GetScreenWidth() - 10, GetScreenHeight()/2.0};
 
+    GameData game = {
+        .ball = createBall(),
+        .left_player = createPad(KEY_UP, KEY_DOWN,  left_player_position),
+        .right_player = createPad(KEY_K, KEY_J,  right_player_position),
+    };
+
+    // Run the Game Loop
     while(!WindowShouldClose()) {
         update(&game);
         draw(&game);

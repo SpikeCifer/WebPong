@@ -8,5 +8,6 @@ typedef struct {
     int Width;
 } Ball;
 
+Ball createBall();
 void updateBall(Ball* ball, Pad* player1, Pad* player2);
 void drawBall(Ball* ball);
